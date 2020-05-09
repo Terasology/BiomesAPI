@@ -1,9 +1,9 @@
 {
     "id" : "BiomesAPI",
     "version" : "3.2.1",
-    "author" : "",
+    "author" : "The Terasology Foundation",
     "displayName" : "BiomesAPI",
-    "description" : "Provides API for working with biomes - thematical sections of world. Previously part of engine.",
+    "description" : "Provides API for working with biomes, i.e., thematic sections of world.",
     "dependencies" : [],
     "serverSideOnly" : false,
     "isLibrary" : true,
