@@ -23,17 +23,23 @@ import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.entitySystem.event.ReceiveEvent;
 import org.terasology.entitySystem.systems.BaseComponentSystem;
 import org.terasology.entitySystem.systems.RegisterSystem;
+import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.PlayerCharacterComponent;
+import org.terasology.logic.players.event.OnPlayerSpawnedEvent;
 import org.terasology.math.geom.Vector3f;
 import org.terasology.math.geom.Vector3i;
 import org.terasology.physics.events.MovedEvent;
+import org.terasology.registry.CoreRegistry;
 import org.terasology.registry.In;
 import org.terasology.registry.Share;
 import org.terasology.world.WorldProvider;
 import org.terasology.world.block.Block;
 import org.terasology.world.chunks.CoreChunk;
+import org.terasology.world.chunks.blockdata.ExtraBlockDataManager;
 import org.terasology.world.chunks.blockdata.ExtraDataSystem;
 import org.terasology.world.chunks.blockdata.RegisterExtraData;
+import org.terasology.rendering.nui.NUIManager;
+import org.terasology.rendering.nui.layers.ingame.metrics.DebugMetricsSystem;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -50,11 +56,21 @@ public class BiomeManager extends BaseComponentSystem implements BiomeRegistry {
     private EntityManager entityManager;
 
     @In
+    private NUIManager nuiManager;
+
+    @In
     private WorldProvider worldProvider;
+
+    @In
+    DebugMetricsSystem debugMetricsSystem;
 
     private final Map<Short, Biome> biomeMap = new HashMap<>();
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BiomeManager.class);
+
+    private BiomesMetricsMode metricsMode;
+
+    private int biomeHashIndex;
 
     @Override
     public Optional<Biome> getBiome(Vector3i pos) {
@@ -79,7 +95,9 @@ public class BiomeManager extends BaseComponentSystem implements BiomeRegistry {
 
     @Override
     public void setBiome(Biome biome, CoreChunk chunk, int relX, int relY, int relZ) {
-        setBiome(biome, chunk.chunkToWorldPosition(relX, relY, relZ));
+        Preconditions.checkArgument(biomeMap.containsKey(biome.biomeHash()), "Trying to use non-registered biome!");
+        biomeHashIndex = CoreRegistry.get(ExtraBlockDataManager.class).getSlotNumber("BiomesAPI.biomeHash");
+        chunk.setExtraData(biomeHashIndex, new Vector3i(relX, relY, relZ), biome.biomeHash());
     }
 
     @Override
@@ -89,12 +107,18 @@ public class BiomeManager extends BaseComponentSystem implements BiomeRegistry {
 
     @Override
     public void setBiome(Biome biome, CoreChunk chunk, Vector3i pos) {
-        setBiome(biome, chunk.chunkToWorldPosition(pos));
+        setBiome(biome, chunk, pos.x, pos.y, pos.z);
     }
 
     @Override
     public <T extends Biome> List<T> getRegisteredBiomes(Class<T> biomeClass) {
         return biomeMap.values().stream().filter(biomeClass::isInstance).map(biomeClass::cast).collect(Collectors.toList());
+    }
+
+    @Override
+    public void preBegin() {
+        metricsMode = new BiomesMetricsMode();
+        debugMetricsSystem.register(metricsMode);
     }
 
     /**
@@ -128,11 +152,26 @@ public class BiomeManager extends BaseComponentSystem implements BiomeRegistry {
             if (!oldBiomeOptional.isPresent()) {
                 return;
             }
+
             Biome newBiome = newBiomeOptional.get();
             Biome oldBiome = oldBiomeOptional.get();
             if (oldBiome != newBiome) {
                 entity.send(new OnBiomeChangedEvent(oldBiome, newBiome));
+                metricsMode.setBiome(newBiome.getId());
             }
         }
+    }
+
+    @ReceiveEvent(components = PlayerCharacterComponent.class)
+    public void checkPlayerSpawnedEvent(OnPlayerSpawnedEvent event, EntityRef entity) {
+        LocationComponent locationComponent = entity.getComponent(LocationComponent.class);
+        Vector3i spawnPos = new Vector3i(locationComponent.getWorldPosition());
+        final Optional<Biome> spawnBiomeOptional = getBiome(spawnPos);
+        if (!spawnBiomeOptional.isPresent()) {
+            return;
+        }
+        Biome spawnBiome = spawnBiomeOptional.get();
+        metricsMode.setBiome(spawnBiome.getId());
+
     }
 }
