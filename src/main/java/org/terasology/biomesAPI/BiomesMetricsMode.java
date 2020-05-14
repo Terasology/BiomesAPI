@@ -18,7 +18,8 @@ package org.terasology.biomesAPI;
 import org.terasology.rendering.nui.layers.ingame.metrics.MetricsMode;
 
 /**
- * A MetricsMode implementation to display Current Biome info in the debug section
+ * Display the name of the biome the player is currently located in in the debug overlay.
+ * <p>
  * Current biome is set when OnBiomeChanged event is triggered
  * biomeName is polled whenever MetricsMode values are updated
  */
