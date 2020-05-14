@@ -165,12 +165,8 @@ public class BiomeManager extends BaseComponentSystem implements BiomeRegistry {
     @ReceiveEvent(components = PlayerCharacterComponent.class)
     public void checkPlayerSpawnedEvent(OnPlayerSpawnedEvent event, EntityRef entity, LocationComponent locationComponent) {
         Vector3i spawnPos = new Vector3i(locationComponent.getWorldPosition());
-        final Optional<Biome> spawnBiomeOptional = getBiome(spawnPos);
-        if (!spawnBiomeOptional.isPresent()) {
-            return;
-        }
-        Biome spawnBiome = spawnBiomeOptional.get();
-        metricsMode.setBiome(spawnBiome.getId());
+        getBiome(spawnPos)
+            .ifPresent(spawnBiome -> metricsMode.setBiome(spawnBiome.getId()));
 
     }
 }
