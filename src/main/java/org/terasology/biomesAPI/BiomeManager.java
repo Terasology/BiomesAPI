@@ -157,7 +157,7 @@ public class BiomeManager extends BaseComponentSystem implements BiomeRegistry {
             Biome oldBiome = oldBiomeOptional.get();
             if (oldBiome != newBiome) {
                 entity.send(new OnBiomeChangedEvent(oldBiome, newBiome));
-                metricsMode.setBiome(newBiome.getId());
+                metricsMode.setBiome(newBiome.getId().toString());
             }
         }
     }
@@ -166,7 +166,7 @@ public class BiomeManager extends BaseComponentSystem implements BiomeRegistry {
     public void checkPlayerSpawnedEvent(OnPlayerSpawnedEvent event, EntityRef entity, LocationComponent locationComponent) {
         Vector3i spawnPos = new Vector3i(locationComponent.getWorldPosition());
         getBiome(spawnPos)
-            .ifPresent(spawnBiome -> metricsMode.setBiome(spawnBiome.getId()));
+            .ifPresent(spawnBiome -> metricsMode.setBiome(spawnBiome.getId().toString()));
 
     }
 }

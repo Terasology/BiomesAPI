@@ -15,6 +15,8 @@
  */
 package org.terasology.biomesAPI;
 
+import org.terasology.naming.Name;
+
 /**
  * Biomes can be assigned to different blocks during worldgen as well as on runtime, to provide additional metadata
  * about player's surroundings usable to enhance player experience.
@@ -29,12 +31,12 @@ public interface Biome {
      * @return An identifier that includes both the Module the biome originates from
      * and a unique biome id (unique to that module).
      */
-    String getId();
+    Name getId();
 
     /**
      * Returns human readable name of the biome.
      */
-    String getName();
+    String getDisplayName();
 
     /**
      * Biome hashCode must be deterministic, non-zero, and unique for every biome.
@@ -47,7 +49,7 @@ public interface Biome {
      */
     default short biomeHash() {
         short hash = 0;
-        char[] chars = getId().toCharArray();
+        char[] chars = getId().toLowerCase().toCharArray();
 
         for (char c : chars) {
             hash = (short) (c + 31 * hash);
