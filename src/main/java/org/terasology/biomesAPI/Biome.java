@@ -58,10 +58,26 @@ public interface Biome {
         return hash;
     }
 
+
+    /**
+     * Gets the base humidity as a relative humidity value (between 0, or 0%, and 1, or 100%).
+     *
+     * This is primarily used for ClimateConditions, and should be overridden for each specific biome.
+     *
+     * @return The base humidity value of a biomes.
+     */
     default float getHumidity() {
         return .3f;
     }
 
+    /**
+     * Gets the base temperature as a Celsius / 100 value (where 0 == 0 degrees and 1 == 100 degrees, for example).
+     * There is no maximum or minimum value.
+     *
+     * This is primarily used for ClimateConditions, and should be overridden for each specific biome.
+     *
+     * @return The base temperature value of a biomes.
+     */
     default float getTemperature() {
         return .22f;
     }
