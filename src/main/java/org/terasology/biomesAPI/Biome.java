@@ -57,4 +57,12 @@ public interface Biome {
 
         return hash;
     }
+
+    default float getHumidity() {
+        return .3f;
+    }
+
+    default float getTemperature() {
+        return .22f;
+    }
 }
