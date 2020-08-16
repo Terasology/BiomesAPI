@@ -1,6 +1,6 @@
 {
     "id": "BiomesAPI",
-    "version": "4.0.0",
+    "version": "4.0.1",
     "isReleaseManaged": true,
     "author": "The Terasology Foundation",
     "displayName": "BiomesAPI",
