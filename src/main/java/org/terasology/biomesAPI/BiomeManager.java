@@ -1,47 +1,33 @@
-/*
- * Copyright 2018 MovingBlocks
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Copyright 2020 The Terasology Foundation
+// SPDX-License-Identifier: Apache-2.0
 package org.terasology.biomesAPI;
 
 import com.google.common.base.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.terasology.entitySystem.entity.EntityManager;
-import org.terasology.entitySystem.entity.EntityRef;
-import org.terasology.entitySystem.event.ReceiveEvent;
-import org.terasology.entitySystem.systems.BaseComponentSystem;
-import org.terasology.entitySystem.systems.RegisterSystem;
-import org.terasology.logic.location.LocationComponent;
-import org.terasology.logic.players.PlayerCharacterComponent;
-import org.terasology.logic.players.event.OnPlayerSpawnedEvent;
+import org.terasology.engine.entitySystem.entity.EntityManager;
+import org.terasology.engine.entitySystem.entity.EntityRef;
+import org.terasology.engine.entitySystem.event.ReceiveEvent;
+import org.terasology.engine.entitySystem.systems.BaseComponentSystem;
+import org.terasology.engine.entitySystem.systems.RegisterSystem;
+import org.terasology.engine.logic.location.LocationComponent;
+import org.terasology.engine.logic.players.PlayerCharacterComponent;
+import org.terasology.engine.logic.players.event.OnPlayerSpawnedEvent;
+import org.terasology.engine.physics.events.MovedEvent;
+import org.terasology.engine.registry.CoreRegistry;
+import org.terasology.engine.registry.In;
+import org.terasology.engine.registry.Share;
+import org.terasology.engine.rendering.nui.NUIManager;
+import org.terasology.engine.rendering.nui.layers.ingame.metrics.DebugMetricsSystem;
+import org.terasology.engine.world.WorldProvider;
+import org.terasology.engine.world.block.Block;
+import org.terasology.engine.world.chunks.CoreChunk;
+import org.terasology.engine.world.chunks.blockdata.ExtraBlockDataManager;
+import org.terasology.engine.world.chunks.blockdata.ExtraDataSystem;
+import org.terasology.engine.world.chunks.blockdata.RegisterExtraData;
 import org.terasology.math.geom.Vector3f;
 import org.terasology.math.geom.Vector3i;
-import org.terasology.physics.events.MovedEvent;
-import org.terasology.registry.CoreRegistry;
-import org.terasology.registry.In;
-import org.terasology.registry.Share;
-import org.terasology.world.WorldProvider;
-import org.terasology.world.block.Block;
-import org.terasology.world.chunks.CoreChunk;
-import org.terasology.world.chunks.blockdata.ExtraBlockDataManager;
-import org.terasology.world.chunks.blockdata.ExtraDataSystem;
-import org.terasology.world.chunks.blockdata.RegisterExtraData;
-import org.terasology.rendering.nui.NUIManager;
-import org.terasology.rendering.nui.layers.ingame.metrics.DebugMetricsSystem;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,25 +38,27 @@ import java.util.stream.Collectors;
 @RegisterSystem
 @ExtraDataSystem
 public class BiomeManager extends BaseComponentSystem implements BiomeRegistry {
-    @In
-    private EntityManager entityManager;
-
-    @In
-    private NUIManager nuiManager;
-
-    @In
-    private WorldProvider worldProvider;
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(BiomeManager.class);
+    private final Map<Short, Biome> biomeMap = new HashMap<>();
     @In
     DebugMetricsSystem debugMetricsSystem;
-
-    private final Map<Short, Biome> biomeMap = new HashMap<>();
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(BiomeManager.class);
-
+    @In
+    private EntityManager entityManager;
+    @In
+    private NUIManager nuiManager;
+    @In
+    private WorldProvider worldProvider;
     private BiomesMetricsMode metricsMode;
 
     private int biomeHashIndex;
+
+    /**
+     * Blocks have id, no matter what kind of blocks they are.
+     */
+    @RegisterExtraData(name = "BiomesAPI.biomeHash", bitSize = 16)
+    public static boolean hasBiome(Block block) {
+        return true;
+    }
 
     @Override
     public Optional<Biome> getBiome(Vector3i pos) {
@@ -121,17 +109,10 @@ public class BiomeManager extends BaseComponentSystem implements BiomeRegistry {
         debugMetricsSystem.register(metricsMode);
     }
 
-    /**
-     * Blocks have id, no matter what kind of blocks they are.
-     */
-    @RegisterExtraData(name = "BiomesAPI.biomeHash", bitSize = 16)
-    public static boolean hasBiome(Block block) {
-        return true;
-    }
-
     @Override
     public void registerBiome(Biome biome) {
-        Preconditions.checkArgument(!biomeMap.containsKey(biome.biomeHash()), "Registering biome with same hash as one of previously registered biomes!");
+        Preconditions.checkArgument(!biomeMap.containsKey(biome.biomeHash()), "Registering biome with same hash as " +
+                "one of previously registered biomes!");
         biomeMap.put(biome.biomeHash(), biome);
         LOGGER.info("Registered biome " + biome.getId() + " with id " + biome.biomeHash());
     }
@@ -163,10 +144,11 @@ public class BiomeManager extends BaseComponentSystem implements BiomeRegistry {
     }
 
     @ReceiveEvent(components = PlayerCharacterComponent.class)
-    public void checkPlayerSpawnedEvent(OnPlayerSpawnedEvent event, EntityRef entity, LocationComponent locationComponent) {
+    public void checkPlayerSpawnedEvent(OnPlayerSpawnedEvent event, EntityRef entity,
+                                        LocationComponent locationComponent) {
         Vector3i spawnPos = new Vector3i(locationComponent.getWorldPosition());
         getBiome(spawnPos)
-            .ifPresent(spawnBiome -> metricsMode.setBiome(spawnBiome.getId().toString()));
+                .ifPresent(spawnBiome -> metricsMode.setBiome(spawnBiome.getId().toString()));
 
     }
 }
