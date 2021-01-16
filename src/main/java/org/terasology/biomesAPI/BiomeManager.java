@@ -16,6 +16,9 @@
 package org.terasology.biomesAPI;
 
 import com.google.common.base.Preconditions;
+import org.joml.RoundingMode;
+import org.joml.Vector3f;
+import org.joml.Vector3i;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terasology.entitySystem.entity.EntityManager;
@@ -26,9 +29,6 @@ import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.PlayerCharacterComponent;
 import org.terasology.logic.players.event.OnPlayerSpawnedEvent;
-import org.terasology.math.JomlUtil;
-import org.terasology.math.geom.Vector3f;
-import org.terasology.math.geom.Vector3i;
 import org.terasology.physics.events.MovedEvent;
 import org.terasology.registry.CoreRegistry;
 import org.terasology.registry.In;
@@ -73,11 +73,6 @@ public class BiomeManager extends BaseComponentSystem implements BiomeRegistry {
     private int biomeHashIndex;
 
     @Override
-    public Optional<Biome> getBiome(Vector3i pos) {
-        return getBiome(pos.x, pos.y, pos.z);
-    }
-
-    @Override
     public Optional<Biome> getBiome(int x, int y, int z) {
         final short biomeHash = (short) worldProvider.getExtraData("BiomesAPI.biomeHash", x, y, z);
         if (biomeHash == 0) {
@@ -97,17 +92,7 @@ public class BiomeManager extends BaseComponentSystem implements BiomeRegistry {
     public void setBiome(Biome biome, CoreChunk chunk, int relX, int relY, int relZ) {
         Preconditions.checkArgument(biomeMap.containsKey(biome.biomeHash()), "Trying to use non-registered biome!");
         biomeHashIndex = CoreRegistry.get(ExtraBlockDataManager.class).getSlotNumber("BiomesAPI.biomeHash");
-        chunk.setExtraData(biomeHashIndex, new Vector3i(relX, relY, relZ), biome.biomeHash());
-    }
-
-    @Override
-    public void setBiome(Biome biome, Vector3i pos) {
-        setBiome(biome, pos.x, pos.y, pos.z);
-    }
-
-    @Override
-    public void setBiome(Biome biome, CoreChunk chunk, Vector3i pos) {
-        setBiome(biome, chunk, pos.x, pos.y, pos.z);
+        chunk.setExtraData(biomeHashIndex, new org.joml.Vector3i(relX, relY, relZ), biome.biomeHash());
     }
 
     @Override
@@ -141,8 +126,8 @@ public class BiomeManager extends BaseComponentSystem implements BiomeRegistry {
      */
     @ReceiveEvent(components = PlayerCharacterComponent.class)
     public void checkBiomeChangeEvent(MovedEvent event, EntityRef entity) {
-        final Vector3i newPosition = new Vector3i(JomlUtil.from(event.getPosition()));
-        final Vector3i oldPosition = new Vector3i(new Vector3f(JomlUtil.from(event.getPosition())).sub(JomlUtil.from(event.getDelta())));
+        final Vector3i newPosition = new Vector3i(event.getPosition(), RoundingMode.FLOOR);
+        final Vector3i oldPosition = new Vector3i(event.getPosition().sub(event.getDelta(), new Vector3f()), RoundingMode.FLOOR);
         if (!newPosition.equals(oldPosition)) {
             final Optional<Biome> newBiomeOptional = getBiome(newPosition);
             final Optional<Biome> oldBiomeOptional = getBiome(oldPosition);
@@ -164,9 +149,7 @@ public class BiomeManager extends BaseComponentSystem implements BiomeRegistry {
 
     @ReceiveEvent(components = PlayerCharacterComponent.class)
     public void checkPlayerSpawnedEvent(OnPlayerSpawnedEvent event, EntityRef entity, LocationComponent locationComponent) {
-        Vector3i spawnPos = new Vector3i(locationComponent.getWorldPosition());
-        getBiome(spawnPos)
-            .ifPresent(spawnBiome -> metricsMode.setBiome(spawnBiome.getId().toString()));
-
+        Vector3i spawnPos = new Vector3i(locationComponent.getWorldPosition(new Vector3f()), RoundingMode.FLOOR);
+        getBiome(spawnPos).ifPresent(spawnBiome -> metricsMode.setBiome(spawnBiome.getId().toString()));
     }
 }

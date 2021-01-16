@@ -15,6 +15,7 @@
  */
 package org.terasology.biomesAPI;
 
+import org.joml.Vector3ic;
 import org.terasology.entitySystem.systems.ComponentSystem;
 import org.terasology.math.geom.Vector3i;
 import org.terasology.world.chunks.CoreChunk;
@@ -44,6 +45,21 @@ public interface BiomeRegistry {
     void setBiome(Biome biome, int x, int y, int z);
 
     /**
+     * Sets specified biome at position in world.
+     *
+     * @param biome Biome to set
+     * @param pos   Position of the block to set
+     */
+    default void setBiome(Biome biome, Vector3ic pos) {
+        setBiome(biome, pos.x(), pos.y(), pos.z());
+    }
+
+    @Deprecated
+    default void setBiome(Biome biome, Vector3i pos) {
+        setBiome(biome, pos.x, pos.y, pos.z);
+    }
+
+    /**
      * Sets specified biome at position in chunk.
      *
      * @param biome Biome to set
@@ -55,21 +71,20 @@ public interface BiomeRegistry {
     void setBiome(Biome biome, CoreChunk chunk, int relX, int relY, int relZ);
 
     /**
-     * Sets specified biome at position in world.
-     *
-     * @param biome Biome to set
-     * @param pos   Position of the block to set
-     */
-    void setBiome(Biome biome, Vector3i pos);
-
-    /**
      * Sets specified biome at position in chunk.
      *
      * @param biome Biome to set
      * @param chunk Chunk where to set the biome
      * @param pos   Position of the block to set
      */
-    void setBiome(Biome biome, CoreChunk chunk, Vector3i pos);
+    default void setBiome(Biome biome, CoreChunk chunk, Vector3ic pos) {
+        setBiome(biome, chunk, pos.x(), pos.y(), pos.z());
+    }
+
+    @Deprecated
+    default void setBiome(Biome biome, CoreChunk chunk, Vector3i pos) {
+        setBiome(biome, chunk, pos.x, pos.y, pos.z);
+    }
 
     /**
      * Gets biome at position in world.
@@ -77,7 +92,14 @@ public interface BiomeRegistry {
      * @param pos Position of the block to get biome of.
      * @return Biome of the block
      */
-    Optional<Biome> getBiome(Vector3i pos);
+    default Optional<Biome> getBiome(Vector3ic pos) {
+        return getBiome(pos.x(), pos.y(), pos.z());
+    };
+
+    @Deprecated
+    default Optional<Biome> getBiome(Vector3i pos) {
+        return getBiome(pos.x, pos.y, pos.z);
+    }
 
     /**
      * Gets biome at position in world.
