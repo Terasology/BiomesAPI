@@ -30,7 +30,6 @@ import org.terasology.logic.location.LocationComponent;
 import org.terasology.logic.players.PlayerCharacterComponent;
 import org.terasology.logic.players.event.OnPlayerSpawnedEvent;
 import org.terasology.physics.events.MovedEvent;
-import org.terasology.registry.CoreRegistry;
 import org.terasology.registry.In;
 import org.terasology.registry.Share;
 import org.terasology.rendering.nui.NUIManager;
@@ -53,16 +52,15 @@ import java.util.stream.Collectors;
 @ExtraDataSystem
 public class BiomeManager extends BaseComponentSystem implements BiomeRegistry {
     @In
-    private EntityManager entityManager;
-
+    protected EntityManager entityManager;
     @In
-    private NUIManager nuiManager;
-
+    protected NUIManager nuiManager;
     @In
-    private WorldProvider worldProvider;
-
+    protected WorldProvider worldProvider;
     @In
-    DebugMetricsSystem debugMetricsSystem;
+    protected DebugMetricsSystem debugMetricsSystem;
+    @In
+    protected ExtraBlockDataManager blockDataManager;
 
     private final Map<Short, Biome> biomeMap = new HashMap<>();
 
@@ -91,7 +89,7 @@ public class BiomeManager extends BaseComponentSystem implements BiomeRegistry {
     @Override
     public void setBiome(Biome biome, CoreChunk chunk, int relX, int relY, int relZ) {
         Preconditions.checkArgument(biomeMap.containsKey(biome.biomeHash()), "Trying to use non-registered biome!");
-        biomeHashIndex = CoreRegistry.get(ExtraBlockDataManager.class).getSlotNumber("BiomesAPI.biomeHash");
+        biomeHashIndex = blockDataManager.getSlotNumber("BiomesAPI.biomeHash");
         chunk.setExtraData(biomeHashIndex, new org.joml.Vector3i(relX, relY, relZ), biome.biomeHash());
     }
 
