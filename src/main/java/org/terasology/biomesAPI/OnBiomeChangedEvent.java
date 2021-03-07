@@ -15,10 +15,10 @@
  */
 package org.terasology.biomesAPI;
 
-import org.terasology.entitySystem.event.Event;
+import org.terasology.engine.entitySystem.event.Event;
 
 /**
- * This event is thrown to entities with {@link org.terasology.logic.players.PlayerCharacterComponent} whenever they
+ * This event is thrown to entities with {@link org.terasology.engine.logic.players.PlayerCharacterComponent} whenever they
  * change the biome they are in.
  */
 public class OnBiomeChangedEvent implements Event {

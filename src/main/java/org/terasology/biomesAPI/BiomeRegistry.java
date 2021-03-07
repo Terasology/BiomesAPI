@@ -3,8 +3,8 @@
 package org.terasology.biomesAPI;
 
 import org.joml.Vector3ic;
-import org.terasology.entitySystem.systems.ComponentSystem;
-import org.terasology.world.chunks.CoreChunk;
+import org.terasology.engine.entitySystem.systems.ComponentSystem;
+import org.terasology.engine.world.chunks.CoreChunk;
 
 import java.util.Collection;
 import java.util.Optional;

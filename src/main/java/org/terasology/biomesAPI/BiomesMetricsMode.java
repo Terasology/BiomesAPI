@@ -15,7 +15,7 @@
  */
 package org.terasology.biomesAPI;
 
-import org.terasology.rendering.nui.layers.ingame.metrics.MetricsMode;
+import org.terasology.engine.rendering.nui.layers.ingame.metrics.MetricsMode;
 
 /**
  * Display the name of the biome the player is currently located in in the debug overlay.
