@@ -15,6 +15,9 @@
  */
 package org.terasology.biomesAPI;
 
+import org.terasology.engine.registry.CoreRegistry;
+import org.terasology.engine.world.block.Block;
+import org.terasology.engine.world.block.BlockManager;
 import org.terasology.naming.Name;
 
 /**
@@ -37,6 +40,58 @@ public interface Biome {
      * Returns human readable name of the biome.
      */
     String getDisplayName();
+
+    /**
+     * @return The block that should be generated as the top layer of the biome.
+     * Defaults to grass.
+     */
+    default Block getSurfaceBlock() {
+        BlockManager blockManager = CoreRegistry.get(BlockManager.class);
+        return blockManager.getBlock("CoreAssets:Grass");
+    }
+
+    /**
+     * @return The number of soil blocks that should appear directly below the surface block.
+     * Defaults to 32.
+     */
+    default int getSoilDepth() {
+        return 32;
+    }
+
+    /**
+     * @return The block that should be generated for getSoilDepth() blocks below the surface block.
+     * Defaults to dirt.
+     */
+    default Block getSoilBlock() {
+        BlockManager blockManager = CoreRegistry.get(BlockManager.class);
+        return blockManager.getBlock("CoreAssets:Dirt");
+    }
+
+    /**
+     * @return The block used to fill all space below the soil blocks.
+     * Defaults to stone.
+     */
+    default Block getSolidBlock() {
+        BlockManager blockManager = CoreRegistry.get(BlockManager.class);
+        return blockManager.getBlock("CoreAssets:stone");
+    }
+
+    /**
+     * @return Whether the surface block should be replaced with snow above getSnowHeight().
+     * Defaults to false.
+     */
+    default boolean hasHighAltitudeSnow() {
+        return false;
+    }
+
+    /**
+     * @return The minimum altitude above sea level for snow generation.
+     * If hasHighAltitudeSnow() returns true, all surface blocks more than getSnowHeight() blocks above sea level should be replaced with snow.
+     * Defaults to 96.
+     */
+    default int getSnowHeight() {
+        return 96;
+    }
 
     /**
      * Biome hashCode must be deterministic, non-zero, and unique for every biome.
