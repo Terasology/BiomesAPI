@@ -5,7 +5,9 @@
   "author": "The Terasology Foundation",
   "displayName": "BiomesAPI",
   "description": "Provides API for working with biomes, i.e., thematic sections of world.",
-  "dependencies": [],
+  "dependencies": [
+    { "id": "CoreAssets", "minVersion": "2.2.0" }
+  ],
   "serverSideOnly": false,
   "isLibrary": true
 }

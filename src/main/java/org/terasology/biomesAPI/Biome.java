@@ -15,6 +15,10 @@
  */
 package org.terasology.biomesAPI;
 
+import org.joml.Vector3ic;
+import org.terasology.engine.registry.CoreRegistry;
+import org.terasology.engine.world.block.Block;
+import org.terasology.engine.world.block.BlockManager;
 import org.terasology.naming.Name;
 
 /**
@@ -37,6 +41,29 @@ public interface Biome {
      * Returns human readable name of the biome.
      */
     String getDisplayName();
+
+    /**
+     * @return The block that should be generated as the top layer of the biome at the given position.
+     * Defaults to grass.
+     */
+    default Block getSurfaceBlock(Vector3ic pos, int seaLevel) {
+        BlockManager blockManager = CoreRegistry.get(BlockManager.class);
+        return blockManager.getBlock("CoreAssets:Grass");
+    }
+
+    /**
+     * @return The block that should be generated at the given position in the biome, which isn't the surface.
+     * Defaults to dirt for the first 32 blocks and then stone below.
+     */
+    default Block getBelowSurfaceBlock(Vector3ic pos, float density) {
+        BlockManager blockManager = CoreRegistry.get(BlockManager.class);
+        if (density > 32) {
+            return blockManager.getBlock("CoreAssets:stone");
+        } else {
+            return blockManager.getBlock("CoreAssets:Dirt");
+
+        }
+    }
 
     /**
      * Biome hashCode must be deterministic, non-zero, and unique for every biome.
