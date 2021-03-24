@@ -36,7 +36,7 @@ import org.terasology.engine.rendering.nui.NUIManager;
 import org.terasology.engine.rendering.nui.layers.ingame.metrics.DebugMetricsSystem;
 import org.terasology.engine.world.WorldProvider;
 import org.terasology.engine.world.block.Block;
-import org.terasology.engine.world.chunks.CoreChunk;
+import org.terasology.engine.world.chunks.Chunk;
 import org.terasology.engine.world.chunks.blockdata.ExtraBlockDataManager;
 import org.terasology.engine.world.chunks.blockdata.ExtraDataSystem;
 import org.terasology.engine.world.chunks.blockdata.RegisterExtraData;
@@ -87,7 +87,7 @@ public class BiomeManager extends BaseComponentSystem implements BiomeRegistry {
     }
 
     @Override
-    public void setBiome(Biome biome, CoreChunk chunk, int relX, int relY, int relZ) {
+    public void setBiome(Biome biome, Chunk chunk, int relX, int relY, int relZ) {
         Preconditions.checkArgument(biomeMap.containsKey(biome.biomeHash()), "Trying to use non-registered biome!");
         biomeHashIndex = blockDataManager.getSlotNumber("BiomesAPI.biomeHash");
         chunk.setExtraData(biomeHashIndex, new org.joml.Vector3i(relX, relY, relZ), biome.biomeHash());
