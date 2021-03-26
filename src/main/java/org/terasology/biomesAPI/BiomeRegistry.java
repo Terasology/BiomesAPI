@@ -4,7 +4,7 @@ package org.terasology.biomesAPI;
 
 import org.joml.Vector3ic;
 import org.terasology.engine.entitySystem.systems.ComponentSystem;
-import org.terasology.engine.world.chunks.CoreChunk;
+import org.terasology.engine.world.chunks.Chunk;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -49,7 +49,7 @@ public interface BiomeRegistry {
      * @param relY  y position of the block to set, relative to the chunk
      * @param relZ  z position of the block to set, relative to the chunk
      */
-    void setBiome(Biome biome, CoreChunk chunk, int relX, int relY, int relZ);
+    void setBiome(Biome biome, Chunk chunk, int relX, int relY, int relZ);
 
     /**
      * Sets specified biome at position in chunk.
@@ -58,7 +58,7 @@ public interface BiomeRegistry {
      * @param chunk Chunk where to set the biome
      * @param pos   Position of the block to set
      */
-    default void setBiome(Biome biome, CoreChunk chunk, Vector3ic pos) {
+    default void setBiome(Biome biome, Chunk chunk, Vector3ic pos) {
         setBiome(biome, chunk, pos.x(), pos.y(), pos.z());
     }
 
