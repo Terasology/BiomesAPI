@@ -19,7 +19,7 @@ import org.joml.Vector3ic;
 import org.terasology.engine.registry.CoreRegistry;
 import org.terasology.engine.world.block.Block;
 import org.terasology.engine.world.block.BlockManager;
-import org.terasology.naming.Name;
+import org.terasology.gestalt.naming.Name;
 
 /**
  * Biomes can be assigned to different blocks during worldgen as well as on runtime, to provide additional metadata
