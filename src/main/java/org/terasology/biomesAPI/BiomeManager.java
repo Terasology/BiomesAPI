@@ -51,6 +51,9 @@ import java.util.stream.Collectors;
 @RegisterSystem
 @ExtraDataSystem
 public class BiomeManager extends BaseComponentSystem implements BiomeRegistry {
+
+    private static final Logger logger = LoggerFactory.getLogger(BiomeManager.class);
+
     @In
     protected EntityManager entityManager;
     @In
@@ -129,8 +132,15 @@ public class BiomeManager extends BaseComponentSystem implements BiomeRegistry {
         if (!newPosition.equals(oldPosition)) {
             final Optional<Biome> newBiomeOptional = getBiome(newPosition);
             final Optional<Biome> oldBiomeOptional = getBiome(oldPosition);
+
             if (oldBiomeOptional.isPresent() != newBiomeOptional.isPresent()) {
-                throw new RuntimeException("Either all blocks in world must have biome, or none.");
+                // This usually happens when a player enters a chunk that is not fully loaded yet. This is usually not a
+                // problem and the biome changed check will work fine again with the next movement once the chunk is
+                // fully loaded.
+                // Leaving a WARN message here to see whether this can occur under other circumstances. Eventually, we
+                // may reduce the logging level further, probably to DEBUG.
+                logger.warn("Missing biome information for {}", !oldBiomeOptional.isPresent() ? oldPosition : newPosition);
+                return;
             }
             if (!oldBiomeOptional.isPresent()) {
                 return;
