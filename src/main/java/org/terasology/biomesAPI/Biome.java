@@ -43,6 +43,11 @@ public interface Biome {
     String getDisplayName();
 
     /**
+     * Runs any necessary initialization, like caching block types, when the biome is registered.
+     */
+    default void initialize() {}
+
+    /**
      * @return The block that should be generated as the top layer of the biome at the given position.
      * Defaults to grass.
      */

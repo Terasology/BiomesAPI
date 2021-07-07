@@ -118,6 +118,7 @@ public class BiomeManager extends BaseComponentSystem implements BiomeRegistry {
     @Override
     public void registerBiome(Biome biome) {
         Preconditions.checkArgument(!biomeMap.containsKey(biome.biomeHash()), "Registering biome with same hash as one of previously registered biomes!");
+        biome.initialize();
         biomeMap.put(biome.biomeHash(), biome);
         LOGGER.info("Registered biome " + biome.getId() + " with id " + biome.biomeHash());
     }
