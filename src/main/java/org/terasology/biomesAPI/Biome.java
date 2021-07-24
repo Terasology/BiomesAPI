@@ -48,6 +48,20 @@ public interface Biome {
     default void initialize() {}
 
     /**
+     * @return An average humidity value for the biome, used for grass and foliage colors.
+     */
+    default float getHumidity() {
+        return 0.5f;
+    }
+
+    /**
+     * @return An average temperature value for the biome, used for grass and foliage colors.
+     */
+    default float getTemperature() {
+        return 0.5f;
+    }
+
+    /**
      * @return The block that should be generated as the top layer of the biome at the given position.
      * Defaults to grass.
      */
