@@ -20,9 +20,9 @@ public class BiomeColorProvider extends BaseComponentSystem implements ColorProv
     private BiomeRegistry biomeRegistry;
 
     /* LUTs */
-    private Texture colorLut;
+    private final Texture colorLut;
 
-    private Texture foliageLut;
+    private final Texture foliageLut;
 
     public BiomeColorProvider() {
         colorLut = Assets.getTexture("engine:grasscolor").get();
@@ -31,24 +31,20 @@ public class BiomeColorProvider extends BaseComponentSystem implements ColorProv
 
     @Override
     public Colorc colorLut(int x, int y, int z) {
-        return biomeRegistry.getBiome(x, y, z).map(biome -> {
-            float humidity = biome.getHumidity();
-            float temperature = biome.getTemperature();
-            float prod = humidity * temperature;
-            return colorLut.getData().getPixel(
-                    (int) ((1 - temperature) * 255),
-                    (int) ((1 - prod) * 255)
-            );
-        }).orElse(Color.white);
+        return lookup(colorLut, x, y, z);
     }
 
     @Override
     public Colorc foliageLut(int x, int y, int z) {
+        return lookup(foliageLut, x, y, z);
+    }
+
+    private Colorc lookup(Texture lut, int x, int y, int z) {
         return biomeRegistry.getBiome(x, y, z).map(biome -> {
             float humidity = biome.getHumidity();
             float temperature = biome.getTemperature();
             float prod = humidity * temperature;
-            return foliageLut.getData().getPixel(
+            return lut.getData().getPixel(
                     (int) ((1 - temperature) * 255),
                     (int) ((1 - prod) * 255)
             );
