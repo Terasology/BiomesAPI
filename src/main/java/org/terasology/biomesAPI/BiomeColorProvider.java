@@ -21,8 +21,9 @@ public class BiomeColorProvider extends BaseComponentSystem implements ColorProv
 
     /* LUTs */
     private final Texture colorLut;
-
     private final Texture foliageLut;
+
+    private final Color colorCache = new Color();
 
     public BiomeColorProvider() {
         colorLut = Assets.getTexture("engine:grasscolor").get();
@@ -46,7 +47,8 @@ public class BiomeColorProvider extends BaseComponentSystem implements ColorProv
             float prod = humidity * temperature;
             return lut.getData().getPixel(
                     (int) ((1 - temperature) * 255),
-                    (int) ((1 - prod) * 255)
+                    (int) ((1 - prod) * 255),
+                    colorCache
             );
         }).orElse(Color.white);
     }
