@@ -4,6 +4,7 @@ package org.terasology.biomesAPI;
 
 import org.joml.Vector3ic;
 import org.terasology.engine.entitySystem.systems.ComponentSystem;
+import org.terasology.engine.world.ChunkView;
 import org.terasology.engine.world.chunks.Chunk;
 
 import java.util.Collection;
@@ -81,6 +82,16 @@ public interface BiomeRegistry {
      * @return Biome of the block
      */
     Optional<Biome> getBiome(int x, int y, int z);
+
+    /**
+     * Gets biome at position in chunk view.
+     *
+     * @param relX x position of the block to get biome of, relative to the chunk view
+     * @param relY y position of the block to get biome of, relative to the chunk view
+     * @param relZ z position of the block to get biome of, relative to the chunk view
+     * @return Biome of the block
+     */
+    Optional<Biome> getBiome(ChunkView view, int relX, int relY, int relZ);
 
     /**
      * Returns all registered biomes of specified subtype.

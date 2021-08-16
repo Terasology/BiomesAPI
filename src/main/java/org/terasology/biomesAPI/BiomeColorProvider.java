@@ -9,6 +9,7 @@ import org.terasology.engine.registry.In;
 import org.terasology.engine.registry.Share;
 import org.terasology.engine.rendering.assets.texture.Texture;
 import org.terasology.engine.utilities.Assets;
+import org.terasology.engine.world.ChunkView;
 import org.terasology.engine.world.block.ColorProvider;
 import org.terasology.nui.Color;
 import org.terasology.nui.Colorc;
@@ -31,17 +32,17 @@ public class BiomeColorProvider extends BaseComponentSystem implements ColorProv
     }
 
     @Override
-    public Colorc colorLut(int x, int y, int z) {
-        return lookup(colorLut, x, y, z);
+    public Colorc colorLut(ChunkView view, int x, int y, int z) {
+        return lookup(colorLut, view, x, y, z);
     }
 
     @Override
-    public Colorc foliageLut(int x, int y, int z) {
-        return lookup(foliageLut, x, y, z);
+    public Colorc foliageLut(ChunkView view, int x, int y, int z) {
+        return lookup(foliageLut, view, x, y, z);
     }
 
-    private Colorc lookup(Texture lut, int x, int y, int z) {
-        return biomeRegistry.getBiome(x, y, z).map(biome -> {
+    private Colorc lookup(Texture lut, ChunkView view, int x, int y, int z) {
+        return biomeRegistry.getBiome(view, x, y, z).map(biome -> {
             float humidity = biome.getHumidity();
             float temperature = biome.getTemperature();
             float prod = humidity * temperature;
