@@ -15,7 +15,7 @@
  */
 package org.terasology.biomesAPI;
 
-import org.terasology.engine.entitySystem.event.Event;
+import org.terasology.gestalt.entitysystem.event.Event;
 
 /**
  * This event is thrown to entities with {@link org.terasology.engine.logic.players.PlayerCharacterComponent} whenever they
