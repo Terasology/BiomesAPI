@@ -1,18 +1,6 @@
-/*
- * Copyright 2018 MovingBlocks
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Copyright 2018 The Terasology Foundation
+// SPDX-License-Identifier: Apache-2.0
+
 package org.terasology.biomesAPI;
 
 import com.google.common.base.Preconditions;
@@ -53,7 +41,7 @@ import java.util.stream.Collectors;
 @ExtraDataSystem
 public class BiomeManager extends BaseComponentSystem implements BiomeRegistry {
 
-    private static final Logger logger = LoggerFactory.getLogger(BiomeManager.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BiomeManager.class);
 
     @In
     protected EntityManager entityManager;
@@ -67,8 +55,6 @@ public class BiomeManager extends BaseComponentSystem implements BiomeRegistry {
     protected ExtraBlockDataManager blockDataManager;
 
     private final Map<Short, Biome> biomeMap = new HashMap<>();
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(BiomeManager.class);
 
     private BiomesMetricsMode metricsMode;
 
@@ -129,10 +115,11 @@ public class BiomeManager extends BaseComponentSystem implements BiomeRegistry {
 
     @Override
     public void registerBiome(Biome biome) {
-        Preconditions.checkArgument(!biomeMap.containsKey(biome.biomeHash()), "Registering biome with same hash as one of previously registered biomes!");
+        Preconditions.checkArgument(!biomeMap.containsKey(biome.biomeHash()),
+                "Registering biome with same hash as one of previously registered biomes!");
         biome.initialize();
         biomeMap.put(biome.biomeHash(), biome);
-        LOGGER.info("Registered biome " + biome.getId() + " with id " + biome.biomeHash());
+        LOGGER.info("Registered biome {} with id {}", biome.getId(), biome.biomeHash());
     }
 
     /**
@@ -152,7 +139,7 @@ public class BiomeManager extends BaseComponentSystem implements BiomeRegistry {
                 // fully loaded.
                 // Leaving a WARN message here to see whether this can occur under other circumstances. Eventually, we
                 // may reduce the logging level further, probably to DEBUG.
-                logger.warn("Missing biome information for {}", !oldBiomeOptional.isPresent() ? oldPosition : newPosition);
+                LOGGER.warn("Missing biome information for {}", !oldBiomeOptional.isPresent() ? oldPosition : newPosition);
                 return;
             }
             if (!oldBiomeOptional.isPresent()) {
